@@ -15,17 +15,33 @@ Este repositório centraliza a **Sprint de Evolução do AgendaFácil**, onde tr
 | Equipe | USs | Status |
 |--------|-----|--------|
 | **Equipe 1** | US01, US04 | 🔄 Em desenvolvimento |
-| **Equipe 2** | US02, US05 | ⏳ A iniciar |
-| **Equipe 3** | US03, US06 | ⏳ A iniciar |
+| **Equipe 2** | US02, US05 | 🔄 Em desenvolvimento |
+| **Equipe 3** | US03, US06 | 🔄 Em desenvolvimento |
 
 ---
 
-## 📦 Sprint Backlog - Equipe 1
+## 📦 Product Backlog
+
+### Equipe 1
 
 | US | Problema |
 |----|----------|
 | **US01** | O usuário não sabe se o agendamento foi realizado com sucesso |
 | **US04** | O sistema permite excluir um agendamento sem solicitar confirmação |
+
+### Equipe 2
+
+| US | Problema |
+|----|----------|
+| **US02** | Pessoas com dificuldade visual encontram problemas para utilizar o sistema |
+| **US05** | A empresa solicitou uma nova funcionalidade para permitir o cancelamento de agendamentos |
+
+### Equipe 3
+
+| US | Problema |
+|----|----------|
+| **US03** | O menu possui muitas opções e os usuários não conseguem encontrar rapidamente as principais funcionalidades |
+| **US06** | A tela de login apresenta mensagens de erro pouco claras |
 
 ---
 
@@ -53,6 +69,8 @@ cd agenda-facil
 agenda-facil/
 ├── README.md
 ├── docs/
-│   └── equipe1/
+│   ├── equipe1/
+│   ├── equipe2/
+│   └── equipe3/
 └── prototipos/
 ```
