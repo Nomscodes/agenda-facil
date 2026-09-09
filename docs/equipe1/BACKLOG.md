@@ -124,7 +124,7 @@ Um item só é considerado concluído quando:
 
 | ID | Solicitação | Origem | Situação |
 |---|---|---|---|
-| CM-01 | Permitir que o usuário informe o motivo do cancelamento | Cliente, durante a Sprint | Analisada pela CCB — aprovada com adiamento para a próxima Sprint |
+| CM-01 | Permitir que o usuário informe o motivo do cancelamento | Cliente, durante a Sprint | Aprovada com adiamento pela CCB — **implementada na V2** |
 
 A análise de impacto e a justificativa da decisão estão registradas no
 [README, seção "Decisão da CCB"](./README.md#decisão-da-ccb).
@@ -135,11 +135,41 @@ A análise de impacto e a justificativa da decisão estão registradas no
 
 Itens levantados durante esta Sprint e ainda não implementados:
 
-| ID | Item | Origem |
-|---|---|---|
-| CM-01 | Motivo do cancelamento (opcional, após a confirmação) | CCB |
-| TD-01 | Usar os dados do formulário ao criar o agendamento | Limitação identificada |
-| TD-02 | Fechar o diálogo com a tecla `Esc` e devolver o foco ao botão de origem | Limitação identificada |
-| TD-03 | Mecanismo de desfazer o cancelamento | Melhoria de reversibilidade |
-| TD-04 | Corrigir contraste do selo "Cancelado" para atingir 4,5:1 | Acessibilidade |
-| TD-05 | Respeitar `prefers-reduced-motion` nas animações | Acessibilidade |
+| ID | Item | Origem | Situação |
+|---|---|---|---|
+| CM-01 | Motivo do cancelamento (opcional) | CCB | ✅ Entregue na V2 |
+| TD-01 | Usar os dados do formulário ao criar o agendamento | Limitação identificada | ✅ Entregue na V2 |
+| TD-02 | Fechar o diálogo com a tecla `Esc` e devolver o foco ao botão de origem | Limitação identificada | Pendente |
+| TD-03 | Mecanismo de desfazer o cancelamento | Melhoria de reversibilidade | Pendente |
+| TD-04 | Corrigir contraste do selo "Cancelado" para atingir 4,5:1 | Acessibilidade | Pendente |
+| TD-05 | Respeitar `prefers-reduced-motion` nas animações | Acessibilidade | Pendente |
+
+---
+
+## V2 — Implementação da mudança aprovada pela CCB
+
+Entregue na branch `V2`, a partir da branch `feature`.
+
+### CM-01 — Motivo do cancelamento
+
+> Como gestor da clínica, quero saber por que os agendamentos são
+> cancelados, para identificar padrões e reduzir cancelamentos.
+
+**Critérios de aceite**
+
+- [x] O diálogo de cancelamento apresenta um campo "Motivo do cancelamento".
+- [x] O campo é **opcional**, conforme a condicionante registrada pela CCB — não bloqueia o cancelamento e não aumenta o atrito da decisão.
+- [x] Limite de 250 caracteres, com contador de caracteres restantes anunciado por `aria-live="polite"`.
+- [x] O contador muda de cor ao se aproximar do limite, avisando antes do erro em vez de depois.
+- [x] O motivo informado é exibido no card do agendamento cancelado.
+
+**Conceito de IHC.** Prevenção de erros (limite com aviso antecipado) e
+comunicação usuário–sistema (o dado informado retorna visível ao usuário,
+em vez de desaparecer no sistema).
+
+### TD-01 — Correção do agendamento criado
+
+O formulário validava os campos corretamente, mas a função `handleBooked`
+descartava os valores preenchidos e inseria sempre um registro fixo. A V2
+passa os dados do formulário para a lista, de modo que o agendamento criado
+corresponde ao que o usuário escolheu.

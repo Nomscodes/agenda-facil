@@ -7,6 +7,7 @@ type Appointment = {
   date: string;
   time: string;
   status: "confirmed" | "pending" | "cancelled";
+  cancelReason?: string;
 };
 
 const SERVICES = [
@@ -50,7 +51,7 @@ type Tab = "agendar" | "meus-agendamentos";
 
 type Toast = { type: "success" | "error"; message: string } | null;
 
-type ConfirmDialog = { id: number; service: string; date: string; time: string } | null;
+type ConfirmDialog = { id: number; service: string; date: string; time: string; reason: string } | null;
 
 function formatDate(iso: string) {
   const [y, m, d] = iso.split("-");
@@ -142,6 +143,8 @@ function ToastBanner({ toast, onClose }: { toast: Toast; onClose: () => void }) 
   );
 }
 
+const MAX_REASON = 250;
+
 /* ── Confirm Delete Dialog ── */
 function ConfirmDialog({
   dialog,
@@ -150,9 +153,13 @@ function ConfirmDialog({
 }: {
   dialog: ConfirmDialog;
   onCancel: () => void;
-  onConfirm: () => void;
+  onConfirm: (reason: string) => void;
 }) {
+  const [reason, setReason] = useState("");
   if (!dialog) return null;
+  const remaining = MAX_REASON - reason.length;
+  const nearLimit = remaining <= 30;
+
   return (
     <div
       role="dialog"
@@ -176,7 +183,7 @@ function ConfirmDialog({
         <p id="confirm-desc" className="text-center text-sm mb-1" style={{ color: "#666666" }}>
           Você está prestes a cancelar:
         </p>
-        <div className="text-center text-sm font-medium mb-6" style={{ color: "#0A0A0A" }}>
+        <div className="text-center text-sm font-medium mb-4" style={{ color: "#0A0A0A" }}>
           <div>{dialog.service}</div>
           <div style={{ color: "#666666" }}>
             {formatDate(dialog.date)} às {dialog.time}
@@ -184,9 +191,37 @@ function ConfirmDialog({
         </div>
 
         {/* IHC: Prevenção de erros — mensagem de alerta antes de ação destrutiva */}
-        <div className="flex items-start gap-2 rounded-lg p-3 mb-6 text-xs" style={{ background: "#EFEFEF", color: "#444444" }}>
+        <div className="flex items-start gap-2 rounded-lg p-3 mb-4 text-xs" style={{ background: "#EFEFEF", color: "#444444" }}>
           <span className="text-base leading-none mt-0.5">⚠️</span>
           <span>Esta ação não pode ser desfeita. O agendamento será cancelado permanentemente.</span>
+        </div>
+
+        {/* CCB-2026-001: campo de motivo do cancelamento */}
+        <div className="flex flex-col gap-1.5 mb-6">
+          <label htmlFor="cancel-reason" className="text-sm font-medium" style={{ color: "#0A0A0A" }}>
+            Motivo do cancelamento{" "}
+            <span className="font-normal" style={{ color: "#666666" }}>(opcional)</span>
+          </label>
+          <textarea
+            id="cancel-reason"
+            value={reason}
+            onChange={(e) => setReason(e.target.value.slice(0, MAX_REASON))}
+            rows={3}
+            placeholder="Ex.: conflito de horário, indisponibilidade do profissional..."
+            className="w-full rounded-lg border px-3 py-2.5 text-sm resize-none transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1"
+            style={{ borderColor: "#D4D4D4", color: "#0A0A0A" }}
+            aria-describedby="reason-counter"
+          />
+          <div className="flex justify-end">
+            <span
+              id="reason-counter"
+              className="text-xs"
+              aria-live="polite"
+              style={{ color: nearLimit ? "#B45309" : "#666666" }}
+            >
+              {remaining} caractere{remaining !== 1 ? "s" : ""} restante{remaining !== 1 ? "s" : ""}
+            </span>
+          </div>
         </div>
 
         <div className="flex gap-3">
@@ -199,7 +234,7 @@ function ConfirmDialog({
             Manter agendamento
           </button>
           <button
-            onClick={onConfirm}
+            onClick={() => onConfirm(reason.trim())}
             className="flex-1 py-2.5 rounded-lg text-sm font-medium transition-opacity cursor-pointer hover:opacity-90"
             style={{ background: "#1A1A1A", color: "#FFFFFF" }}
           >
@@ -249,7 +284,14 @@ function AppointmentCard({
         </div>
       </div>
 
-      {appt.status !== "cancelled" && (
+      {appt.status === "cancelled" && appt.cancelReason ? (
+        <div className="pt-2 border-t" style={{ borderColor: "#E8E8E8" }}>
+          <p className="text-xs" style={{ color: "#666666" }}>
+            <span className="font-medium" style={{ color: "#0A0A0A" }}>Motivo: </span>
+            {appt.cancelReason}
+          </p>
+        </div>
+      ) : appt.status !== "cancelled" ? (
         <div className="pt-1 border-t" style={{ borderColor: "#E8E8E8" }}>
           <button
             onClick={() => onDelete(appt)}
@@ -261,13 +303,13 @@ function AppointmentCard({
             Cancelar agendamento
           </button>
         </div>
-      )}
+      ) : null}
     </article>
   );
 }
 
 /* ── Booking Form ── */
-function BookingForm({ onBooked }: { onBooked: () => void }) {
+function BookingForm({ onBooked }: { onBooked: (appt: Omit<Appointment, "id" | "status">) => void }) {
   const [form, setForm] = useState({ service: "", professional: "", date: "", time: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -295,8 +337,9 @@ function BookingForm({ onBooked }: { onBooked: () => void }) {
     setSubmitting(true);
     setTimeout(() => {
       setSubmitting(false);
+      const booked = { ...form };
       setForm({ service: "", professional: "", date: "", time: "" });
-      onBooked();
+      onBooked(booked);
     }, 1200);
   }
 
@@ -462,17 +505,10 @@ export default function App() {
     setTimeout(() => setToast(null), 5000);
   }
 
-  function handleBooked() {
+  function handleBooked(appt: Omit<Appointment, "id" | "status">) {
     setAppointments((prev) => [
       ...prev,
-      {
-        id: nextId,
-        service: "Consulta Médica",
-        professional: "Dra. Camila Torres",
-        date: "2026-09-25",
-        time: "10:00",
-        status: "confirmed",
-      },
+      { id: nextId, ...appt, status: "confirmed" },
     ]);
     setNextId((n) => n + 1);
     /* IHC: Feedback ao usuário — confirmação explícita de agendamento realizado */
@@ -482,12 +518,12 @@ export default function App() {
 
   function handleDeleteRequest(appt: Appointment) {
     /* IHC: Prevenção de erros — confirmação antes de excluir */
-    setConfirmDialog({ id: appt.id, service: appt.service, date: appt.date, time: appt.time });
+    setConfirmDialog({ id: appt.id, service: appt.service, date: appt.date, time: appt.time, reason: "" });
   }
 
-  function handleDeleteConfirm() {
+  function handleDeleteConfirm(reason: string) {
     setAppointments((prev) =>
-      prev.map((a) => a.id === confirmDialog!.id ? { ...a, status: "cancelled" as const } : a)
+      prev.map((a) => a.id === confirmDialog!.id ? { ...a, status: "cancelled" as const, cancelReason: reason || undefined } : a)
     );
     setConfirmDialog(null);
     showToast("success", "Agendamento cancelado. Se precisar, você pode reagendar a qualquer momento.");
@@ -501,7 +537,7 @@ export default function App() {
       <ToastBanner toast={toast} onClose={() => setToast(null)} />
 
       {/* Confirm Dialog — IHC: Prevenção de erros */}
-      <ConfirmDialog dialog={confirmDialog} onCancel={() => setConfirmDialog(null)} onConfirm={handleDeleteConfirm} />
+      <ConfirmDialog dialog={confirmDialog} onCancel={() => setConfirmDialog(null)} onConfirm={(r) => handleDeleteConfirm(r)} />
 
       {/* Header */}
       <header

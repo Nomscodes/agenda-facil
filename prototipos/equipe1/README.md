@@ -267,10 +267,9 @@ incremento de **MINOR**, mantendo MAJOR e zerando PATCH: **`v1.1.0`**.
 Registradas de forma transparente como candidatas ao Backlog da próxima
 Sprint:
 
-1. **O agendamento criado não usa os dados do formulário.** Em
-   `src/App.tsx`, a função `handleBooked()` insere um registro fixo em vez
-   de aproveitar os valores preenchidos. A validação funciona, mas o dado
-   escolhido é descartado. **Corrigir antes da apresentação.**
+1. ~~**O agendamento criado não usa os dados do formulário.**~~
+   *Corrigido na V2 (TD-01): `handleBooked()` passou a receber os valores
+   do formulário.*
 2. **A tecla `Esc` não fecha o diálogo de confirmação.** Falta o listener de
    teclado e o retorno do foco ao botão que abriu o diálogo. Sem isso, o
    usuário de teclado não tem saída rápida — o que enfraquece justamente a
