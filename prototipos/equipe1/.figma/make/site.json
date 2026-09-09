@@ -1,0 +1,10 @@
+{
+  "description": "Simplifies appointment scheduling with clear feedback, error prevention, and accessible navigation to enhance user confidence and experience.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
