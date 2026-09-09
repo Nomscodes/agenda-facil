@@ -4,3 +4,7 @@ dev-dist
 *.local
 .DS_Store
 .vercel
+node_modules/
+dist/
+.cache/
+*.log

@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap');
+@import 'tailwindcss';
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+@theme inline {
+  --color-background: #F5F5F5;
+  --color-foreground: #0A0A0A;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #0A0A0A;
+  --color-primary: #0A0A0A;
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary: #EFEFEF;
+  --color-secondary-foreground: #0A0A0A;
+  --color-muted: #E8E8E8;
+  --color-muted-foreground: #666666;
+  --color-accent: #1A1A1A;
+  --color-accent-foreground: #FFFFFF;
+  --color-destructive: #1A1A1A;
+  --color-destructive-foreground: #FFFFFF;
+  --color-success: #0A0A0A;
+  --color-success-foreground: #FFFFFF;
+  --color-border: #D4D4D4;
+  --color-ring: #0A0A0A;
+  --radius: 8px;
+
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-serif: 'DM Serif Display', serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+/* Hide scrollbar until hover */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: transparent; border-radius: 3px; }
+*:hover::-webkit-scrollbar-thumb { background: var(--color-border); }
+
+/* Focus ring */
+*:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Animations */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.animate-slide-up { animation: slideUp 0.3s ease forwards; }
+.animate-fade-in  { animation: fadeIn 0.25s ease forwards; }
+.animate-scale-in { animation: scaleIn 0.25s ease forwards; }
