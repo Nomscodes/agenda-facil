@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgendaFácil - Sistema de Agendamentos</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #FFFFFF;
+      color: #0F172A;
+    }
+
+    .page {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      background: #FFFFFF;
+    }
+
+    .frame {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: linear-gradient(0deg, #F8FAFC, #F8FAFC), #FFFFFF;
+      padding: 40px 32px;
+      border-radius: 16px;
+      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    /* Cabeçalho do Projeto */
+    .header-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+
+    .brand-icon {
+      width: 56px;
+      height: 48px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #2563EB;
+      border-radius: 12px;
+      color: #FFFFFF;
+      font-size: 24px;
+    }
+
+    .heading h1 {
+      margin: 0;
+      color: #0F172A;
+      font-weight: 700;
+      font-size: 26px;
+      line-height: 30px;
+    }
+
+    .subtitle {
+      color: #64748B;
+      font-weight: 400;
+      font-size: 14px;
+    }
+
+    /* Barra Dropdown de Abas */
+    .tabs-selector-container {
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    .tabs-trigger {
+      width: 100%;
+      height: 48px;
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-radius: 10px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 15px;
+      color: #1E293B;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .tabs-trigger:hover {
+      border-color: #2563EB;
+      color: #2563EB;
+    }
+
+    .arrow-icon {
+      font-size: 12px;
+      transition: transform 0.2s ease;
+    }
+
+    .tabs-trigger.active .arrow-icon {
+      transform: rotate(180deg);
+    }
+
+    .tabs-dropdown {
+      display: none;
+      position: absolute;
+      top: 54px;
+      left: 0;
+      width: 100%;
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.12);
+      z-index: 50;
+      overflow: hidden;
+    }
+
+    .tabs-dropdown.open {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tab-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      color: #334155;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      border-bottom: 1px solid #F1F5F9;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .tab-item:last-child {
+      border-bottom: none;
+    }
+
+    .tab-item:hover {
+      background: #F8FAFC;
+      color: #2563EB;
+    }
+
+    .tab-icon {
+      font-size: 16px;
+    }
+
+    /* Container Principal das Telas Internas */
+    .content-frame {
+      width: 100%;
+      min-height: 480px;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      background: #FFFFFF;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    /* Estilos Genéricos dos Formulários e Cartões */
+    .card-inner {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid #E2E8F0;
+      background: #FFF;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #334155;
+    }
+
+    .form-control {
+      width: 100%;
+      height: 38px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #CBD5E1;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: #2563EB;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+    }
+
+    .feedback {
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .feedback.error {
+      color: #DC2626;
+    }
+
+    .btn-submit {
+      width: 100%;
+      height: 40px;
+      background: #2563EB;
+      color: #FFF;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.15s ease;
+    }
+
+    .btn-submit:hover {
+      background: #1D4ED8;
+    }
+
+    /* Painel do Menu Otimizado (US03) */
+    .header-bar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      background: #F8FAFC;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid #E2E8F0;
+    }
+
+    .grid-menu {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .card-action {
+      padding: 18px;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      background: #FFF;
+      transition: transform 0.15s, border-color 0.15s;
+      cursor: pointer;
+    }
+
+    .card-action:hover {
+      border-color: #2563EB;
+      transform: translateY(-2px);
+    }
+
+    .card-action h3 {
+      margin: 0 0 6px 0;
+      font-size: 15px;
+      color: #2563EB;
+    }
+
+    .card-action p {
+      margin: 0;
+      font-size: 12px;
+      color: #64748B;
+      line-height: 1.4;
+    }
+
+    .tag-badge {
+      display: inline-block;
+      background: #EFF6FF;
+      color: #2563EB;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+
+    /* Tabela de Agendamentos Existentes */
+    .appointments-list {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 13px;
+    }
+
+    .appointments-list th, .appointments-list td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #E2E8F0;
+    }
+
+    .appointments-list th {
+      background: #F8FAFC;
+      color: #475569;
+      font-weight: 600;
+    }
+
+    @media (max-width: 600px) {
+      .page {
+        padding: 16px 8px;
+      }
+
+      .frame {
+        padding: 20px 12px;
+      }
+
+      .content-frame {
+        padding: 16px;
+      }
+
+      .header-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="page">
+    <div class="frame">
+      
+      <!-- Cabeçalho Principal -->
+      <div class="header-area">
+        <div class="brand-icon" aria-hidden="true">📅</div>
+        <div class="heading">
+          <h1>AgendaFácil</h1>
+        </div>
+        <div class="subtitle">Gerencie seus compromissos com simplicidade</div>
+      </div>
+
+      <!-- Barra Dropdown especificando "Abas" -->
+      <div class="tabs-selector-container">
+        <button class="tabs-trigger" id="tabsTrigger">
+          <span><span style="color:#64748B; font-weight:400;">Navegar por Abas:</span> <strong id="currentTabTitle">1. Login no Sistema</strong></span>
+          <span class="arrow-icon">▼</span>
+        </button>
+
+        <div class="tabs-dropdown" id="tabsDropdown">
+          <div class="tab-item" onclick="switchTab('tab1', '1. Login no Sistema')">
+            <span class="tab-icon">🔑</span>
+            <span>1. Login no Sistema</span>
+          </div>
+          <div class="tab-item" onclick="switchTab('tab2', '2. Painel de Agendamentos')">
+            <span class="tab-icon">🎯</span>
+            <span>2. Painel de Agendamentos</span>
+          </div>
+          <div class="tab-item" onclick="switchTab('tab3', '3. Novo Agendamento')">
+            <span class="tab-icon">📅</span>
+            <span>3. Novo Agendamento</span>
+          </div>
+          <div class="tab-item" onclick="switchTab('tab4', '4. Criar Conta')">
+            <span class="tab-icon">👤</span>
+            <span>4. Criar Conta</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Container de Conteúdo Unificado -->
+      <div class="content-frame">
+        
+        <!-- ABA 1: LOGIN (US06) -->
+        <div id="tab1" class="tab-panel active">
+          <div class="card-inner">
+            <h2 style="font-size: 18px; margin-top:0; text-align:center;">Acesse sua Conta</h2>
+            <form id="formLogin">
+              <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" class="form-control" placeholder="usuario@dominio.com">
+                <div id="emailMsg" class="feedback"></div>
+              </div>
+              <div class="form-group">
+                <label for="pass">Senha</label>
+                <input type="password" id="pass" class="form-control" placeholder="Sua senha">
+                <div id="passMsg" class="feedback"></div>
+              </div>
+              <button type="submit" class="btn-submit">Entrar</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- ABA 2: PAINEL E MENU RÁPIDO (US03) -->
+        <div id="tab2" class="tab-panel">
+          <div class="header-bar">
+            <strong>Buscar Opção / Agendamento</strong>
+            <input type="text" id="searchInput" class="form-control" style="max-width: 260px;" placeholder="🔍 Digite para buscar..." onkeyup="filterMenu()">
+          </div>
+
+          <div class="grid-menu" id="menuGrid">
+            <div class="card-action" data-title="Novo Agendamento" onclick="switchTab('tab3', '3. Novo Agendamento')">
+              <span class="tag-badge">AÇÃO RÁPIDA</span>
+              <h3>📅 Marcar Consulta</h3>
+              <p>Agende um novo horário em poucos cliques.</p>
+            </div>
+            <div class="card-action" data-title="Meus Agendamentos">
+              <span class="tag-badge">AÇÃO RÁPIDA</span>
+              <h3>📋 Meus Horários</h3>
+              <p>Confira ou cancele compromissos agendados.</p>
+            </div>
+            <div class="card-action" data-title="Histórico">
+              <h3>📊 Histórico</h3>
+              <p>Consulte atendimentos passados.</p>
+            </div>
+            <div class="card-action" data-title="Perfil do Usuário">
+              <h3>⚙️ Configurações</h3>
+              <p>Atualize seus dados pessoais e de acesso.</p>
+            </div>
+          </div>
+
+          <h3 style="font-size: 15px; margin-top: 28px; margin-bottom: 8px;">Próximos Agendamentos</h3>
+          <table class="appointments-list">
+            <thead>
+              <tr>
+                <th>Data / Hora</th>
+                <th>Serviço</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>12/10/2026 - 14:00</td>
+                <td>Atendimento Presencial</td>
+                <td><span class="tag-badge" style="background:#DCFCE7; color:#15803D;">Confirmado</span></td>
+              </tr>
+              <tr>
+                <td>18/10/2026 - 09:30</td>
+                <td>Consulta On-line</td>
+                <td><span class="tag-badge" style="background:#FEF3C7; color:#B45309;">Pendente</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ABA 3: NOVO AGENDAMENTO -->
+        <div id="tab3" class="tab-panel">
+          <div class="card-inner" style="max-width: 440px;">
+            <h2 style="font-size: 18px; margin-top:0;">Agendar Atendimento</h2>
+            <form id="agendarForm">
+              <div class="form-group">
+                <label for="servico">Tipo de Serviço</label>
+                <select id="servico" class="form-control" required>
+                  <option value="">Selecione o serviço...</option>
+                  <option value="presencial">Atendimento Presencial</option>
+                  <option value="online">Consulta On-line</option>
+                  <option value="suporte">Suporte Técnico</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="data">Data Desejada</label>
+                <input type="date" id="data" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="hora">Horário Disponível</label>
+                <select id="hora" class="form-control" required>
+                  <option value="">Selecione um horário...</option>
+                  <option value="08:00">08:00</option>
+                  <option value="10:00">10:00</option>
+                  <option value="14:00">14:00</option>
+                  <option value="16:00">16:00</option>
+                </select>
+              </div>
+              <button type="submit" class="btn-submit">Confirmar Agendamento</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- ABA 4: CRIAR CONTA -->
+        <div id="tab4" class="tab-panel">
+          <div class="card-inner">
+            <h2 style="font-size: 18px; margin-top:0;">Criar Conta no AgendaFácil</h2>
+            <form id="cadForm">
+              <div class="form-group">
+                <label for="nome">Nome Completo</label>
+                <input type="text" id="nome" class="form-control" required placeholder="Ex: Maria Silva">
+              </div>
+              <div class="form-group">
+                <label for="cadEmail">E-mail</label>
+                <input type="email" id="cadEmail" class="form-control" required placeholder="maria@dominio.com">
+              </div>
+              <div class="form-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" class="form-control" required placeholder="Mínimo 6 caracteres">
+              </div>
+              <button type="submit" class="btn-submit">Cadastrar</button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Controle do Dropdown de Abas
+    const tabsTrigger = document.getElementById('tabsTrigger');
+    const tabsDropdown = document.getElementById('tabsDropdown');
+    const currentTabTitle = document.getElementById('currentTabTitle');
+
+    tabsTrigger.addEventListener('click', () => {
+      tabsDropdown.classList.toggle('open');
+      tabsTrigger.classList.toggle('active');
+    });
+
+    // Troca de Abas
+    function switchTab(tabId, title) {
+      document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.classList.remove('active');
+      });
+
+      document.getElementById(tabId).classList.add('active');
+      currentTabTitle.textContent = title;
+      tabsDropdown.classList.remove('open');
+      tabsTrigger.classList.remove('active');
+    }
+
+    // Fechar dropdown ao clicar fora
+    document.addEventListener('click', (e) => {
+      if (!tabsTrigger.contains(e.target) && !tabsDropdown.contains(e.target)) {
+        tabsDropdown.classList.remove('open');
+        tabsTrigger.classList.remove('active');
+      }
+    });
+
+    // Validação da Aba 1 (Login - US06)
+    const email = document.getElementById('email');
+    const pass = document.getElementById('pass');
+    const emailMsg = document.getElementById('emailMsg');
+    const passMsg = document.getElementById('passMsg');
+
+    document.getElementById('formLogin').addEventListener('submit', (e) => {
+      e.preventDefault();
+      let valid = true;
+      
+      const val = email.value.trim();
+      if (!val) {
+        email.style.borderColor = "#EF4444";
+        emailMsg.textContent = "Erro: O campo de e-mail é obrigatório.";
+        emailMsg.className = "feedback error";
+        valid = false;
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+        email.style.borderColor = "#EF4444";
+        emailMsg.textContent = "Erro: Digite um e-mail válido no formato usuario@dominio.com.";
+        emailMsg.className = "feedback error";
+        valid = false;
+      } else {
+        email.style.borderColor = "#22C55E";
+        emailMsg.textContent = "";
+      }
+
+      if (!pass.value.trim()) {
+        pass.style.borderColor = "#EF4444";
+        passMsg.textContent = "Erro: Por favor, informe sua senha de acesso.";
+        passMsg.className = "feedback error";
+        valid = false;
+      } else {
+        pass.style.borderColor = "#CBD5E1";
+        passMsg.textContent = "";
+      }
+
+      if(valid) alert("Login realizado com sucesso!");
+    });
+
+    // Lógica da Busca da Aba 2 (Menu)
+    function filterMenu() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.card-action');
+      cards.forEach(c => {
+        const title = c.getAttribute('data-title').toLowerCase();
+        c.style.display = title.includes(q) ? 'block' : 'none';
+      });
+    }
+
+    // Formulário de Agendamento
+    document.getElementById('agendarForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Agendamento realizado com sucesso!');
+      switchTab('tab2', '2. Painel de Agendamentos');
+    });
+
+    // Formulário de Cadastro
+    document.getElementById('cadForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Conta criada com sucesso!');
+      switchTab('tab1', '1. Login no Sistema');
+    });
+  </script>
+</body>
+</html>
